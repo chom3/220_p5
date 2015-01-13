@@ -1,0 +1,85 @@
+    for (int j = 0; j < cache->nLinesPerSet; j++)
+    {
+        //implementation for cache_miss_with_replace, taking into account the replacement
+        if (cache[i].set[j].tag != addr_t) 
+        {
+          if (cache[i].replacement == LRU_R) //check for replacement strategies
+          {
+            //linear search for smallest timestamp number
+            for (int k = 0; k < n; k++)
+            {
+              for (int l = 0; l < cache->nLinesPerSet; l++)
+              {
+                //find the minimum
+                if (cache[k].set[l].timeStamp < min)
+                {
+                  min = cache[k].set[l].timeStamp;
+                  printf("%d\n", cache[i].set[j].timeStamp);
+                  index1 = k;
+                  index2 = l;
+                  location = cache[k].set[l];
+                  //printf("%u\n", result.replaceAddr);
+                  //printf("%d", 100);
+                }
+              }
+            }
+            // //make the validity true
+            // for (int k = 0; k < n; k++)
+            // {
+            //   for (int l = 0; l < cache->nLinesPerSet; l++)
+            //   {
+            //     if (cache[k].set[l].tag == location.tag && cache[k].set[l].timeStamp == location.timeStamp){
+            //       cache[k].set[l].isValid = true;
+            //     }
+            //   }
+            // }
+            result.status = CACHE_MISS_WITH_REPLACE;
+            result.replaceAddr = cache[index1].set[index2].mAddr;
+            cache[index1].set[index2].tag = addr_t;
+            return result;
+          }
+          //linear search for largest timestamp number
+          else if (cache[i].replacement == MRU_R)
+          {
+            for (int k = 0; k < n; k++)
+            {
+              for (int l = 0; l < cache->nLinesPerSet; l++)
+              {
+                if (cache[k].set[l].timeStamp > max)
+                {
+                  max = cache[k].set[l].timeStamp;
+                  index1 = k;
+                  index2 = l;
+                  location = cache[k].set[l];
+                }
+              }
+            }
+            //make the validity true
+            for (int k = 0; k < n; k++)
+            {
+              for (int l = 0; l < cache->nLinesPerSet; l++)
+              {
+                if (cache[k].set[l].tag == location.tag && cache[k].set[l].timeStamp == location.timeStamp){
+                  cache[k].set[l].isValid = true;
+                }
+              }
+            }
+            result.status = CACHE_MISS_WITH_REPLACE;
+            result.replaceAddr = cache[index1].set[index2].mAddr;
+            cache[index1].set[index2].tag = addr_t;
+            return result;
+          }
+          //take a random number, replace it, and do the same as above cases
+          else if (cache[i].replacement == RANDOM_R)
+          {
+            int ran1 = rand()%(n-1);
+            int ran2 = rand()%(cache->nLinesPerSet-1);
+            cache[ran1].set[ran2].tag = addr_t;
+            cache[ran1].set[ran2].isValid = true;
+            result.status = CACHE_MISS_WITH_REPLACE;
+           // result.replaceAddr = (block << (cache[0].nLineBits));
+            return result;
+          }
+        }
+      }
+  }
